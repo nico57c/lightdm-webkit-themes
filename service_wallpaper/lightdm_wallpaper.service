@@ -1,0 +1,13 @@
+[Unit]
+Description=Lighdm Wallpaper
+RequiresMountsFor=__drivedir__
+
+[Service]
+Type=oneshot
+User=__user__
+WorkingDirectory=__installdir__
+ExecStart=__installdir__/wallpaper_rotate.sh
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

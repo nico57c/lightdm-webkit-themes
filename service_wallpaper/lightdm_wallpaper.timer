@@ -1,0 +1,9 @@
+[Unit]
+Description=Lightdm wallpaper Timer
+
+[Timer]
+OnUnitActiveSec=1day
+Unit=lightdm_customize.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,90 @@
+<html>
+	<head>
+		<meta name="viewport" content="width:device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="../petrichor.css" />
+		<script src="../petrichor.js" type="text/javascript"></script>
+		<script src="../petrichor_select.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="date-container">
+			<div id="date"></div>
+			<div id="time"></div>
+		</div>
+		<div id="prompt-container">
+			<div id="prompt-title"></div>
+			<div id="prompt-content">
+				<form>
+					<div id="prompt-label"></div>
+					<div id="prompt-entry"></div>
+					<div id="prompt-action">
+						<span>Ok</span >
+						<span>Cancel</span>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div id="power-confirm" onclick="hide_element('power-confirm')">
+			<ul>
+				<li>
+					<a href="#" onclick="lightdm.shutdown();">
+						<div class="icon" id="icon-shutdown"></div>
+						<span>Power off</span>
+					</a>
+				</li>
+				<li>
+					<a href="#" onclick="lightdm.restart();">
+						<div class="icon" id="icon-reboot"></div>
+						<span>Restart</span>
+					</a>
+				</li>
+				<li>
+					<a href="#" onclick="hide_element('power-confirm');">
+						<div class="icon" id="icon-cancel"></div>
+						<span>Cancel</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div id="users" class="shown"></div>
+		<div id="session-list"></div>
+		<img id="shutdown" src="../image/iec5009.svg" onclick="show_element('power-confirm')" />
+		<script type="application/javascript">
+			var lightdm = {
+				authenticate: function(username) { show_prompt("Password", 0); return false; },
+				autologin_timeout: 0,
+				sessions: [
+					{
+						name: "Xfce",
+						key: "xfce"
+					},
+					{
+						name: "Gnome",
+						key: "gnome"
+					}
+				],
+				users: [
+					{
+						display_name: "Arthur",
+						name: "arthur",
+						image: "./faces/arthur/.face",
+					},
+					{
+						display_name: "Anne",
+						name: "anne",
+						image: "./faces/anne/.face",
+					},
+					{
+						display_name: "Sasha",
+						name: "sasha",
+						image: "./faces/arthur/.face",
+					},
+					{
+						display_name: "John",
+						name: "john",
+						image: "./faces/john/.face",
+					}
+				]
+			};
+		</script>
+	</body>
+</html>

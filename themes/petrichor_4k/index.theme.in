@@ -1,0 +1,6 @@
+[theme]
+name=Petrichor 4K
+version={VERSION}
+description=Petrichor 4K Theme
+engine=lightdm-webkit2-greeter
+url=index.html
