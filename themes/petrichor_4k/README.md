@@ -27,6 +27,17 @@
 - Merge in same space
 - Displayed in the middle of screen
 
+### Control user selection by keyboard
+- Users selection :
+  - Arrow `Left`, `Up`, `Right`, `Down`  to select user
+  - `Enter` to display password form
+    - `Enter` to valid form
+    - `Escape` to quit password form
+- Power selection :
+  - `Tab` to enter in power menu
+  - Arrow `Left`, `Up`, `Right`, `Down`  to select power option (reboot or shutdown
+  - `Enter` to valid selection
+  - `Tab` or `Escape` to quit power menu
 
 # Petrichor
 ## A clean theme for LightDM's webkit greeter
