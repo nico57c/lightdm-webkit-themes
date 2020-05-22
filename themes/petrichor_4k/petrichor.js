@@ -1,16 +1,25 @@
 var password_prompt = false;
 var selected_user = null;
+var focused_user = null;
+var focused_onpowerconfirm = false;
 var selected_session = null;
 var time_remaining = 0;
 
-function show_element(id)
+function toggle_menu(force = null)
 {
-	document.getElementById(id).classList.add('shown');
-}
-
-function hide_element(id)
-{
-	document.getElementById(id).classList.remove('shown');
+	const state = force === null? !document.getElementById('power-confirm').classList.contains('shown'): force;
+	if(state === true) {
+		document.getElementById('power-confirm').classList.add('shown');
+		document.getElementById('menu').classList.add('menu-focus');
+		focused_onpowerconfirm = true;
+	} else {
+		document.getElementById('power-confirm').classList.remove('shown');
+		document.getElementById('menu').classList.remove('menu-focus');
+		Array.from(document.querySelectorAll('#power-confirm .menu-focus')).forEach(function(el) {
+			el.classList.remove('menu-focus');
+		});
+		focused_onpowerconfirm = false;
+	}
 }
 
 function show_prompt(text, type)
@@ -20,13 +29,15 @@ function show_prompt(text, type)
 	document.getElementById('users').classList.remove('shown');
 	document.getElementById('prompt-container').classList.add('shown');
 
+	document.querySelector('#prompt-content > form').onsubmit = function() {
+		provide_secret();
+	};
+
 	let input = document.createElement('input');
 	document.getElementById('prompt-entry').appendChild(input);
 	input.type = 'password';
 	input.value = '';
 	input.focus();
-
-
 }
 
 function show_message(text, type)
@@ -48,9 +59,11 @@ function show_message(text, type)
 	}
 }
 
-function reset()
+function reset_prompt()
 {
-	document.getElementById('password-container').classList.remove("shown");
+	document.getElementById('prompt-container').classList.remove("shown");
+	document.getElementById('prompt-entry').firstElementChild.remove();
+	document.getElementById('users').classList.add('shown');
 	password_prompt = false;
 }
 
@@ -61,7 +74,7 @@ function authentication_complete()
 	else
 		show_message('<span class="error-icon">&#x26A0;</span> Authentication Failed');
 
-	reset();
+	reset_prompt();
 }
 
 function start_authentication(username)
@@ -76,9 +89,10 @@ function start_authentication(username)
 
 function provide_secret()
 {
-	lightdm.respond(document.getElementById('prompt-entry').firstElementChild.value);
-	document.getElementById('prompt-entry').remove();
-	document.getElementById('promt-container').classList.remove('shown');
+    const value = document.getElementById('prompt-entry').firstElementChild.value;
+	reset_prompt();
+	lightdm.respond(value);
+	delete(value);
 }
 
 function autologin_timer_expired(username)
@@ -138,7 +152,9 @@ function start()
 		else
 			image = user.image;
 
-		html += '<a href="#" class="user" id="user-' + user.name +'" onclick="start_authentication(\'' + user.name + '\')">';
+		html += '<a href="#" class="user" id="user-' + user.name +'" onclick="start_authentication(\'' + user.name + '\')" ' +
+			'onmouseover="focusOnNextUser(null); focused_user = \'user-' + user.name + '\'" ' +
+			'onmouseout="focused_user=null">';
 		html += '<img class="avatar" src="file:///' + image + '" /><span class="name">'+user.display_name+'</span>';
 
 		if (user.name == lightdm.autologin_user && lightdm.autologin_timeout > 0)
@@ -160,14 +176,123 @@ function load()
 	start();
 }
 
-/* Temporary hack until webkit greeter 3.
- * The fact this is needed frankly makes me shudder. */
 function try_load()
 {
 	if (typeof lightdm !== 'undefined') {
 		load();
 	} else {
 		setTimeout(try_load, 500);
+	}
+}
+
+
+window.onkeydown = function(e) {
+
+	e.stopPropagation();
+	e.stopImmediatePropagation();
+
+	if(!password_prompt) {
+		var event = new MouseEvent('mouseover', {
+			'view': window,
+			'bubbles': true,
+			'cancelable': true
+		});
+
+		let nextUserId = null;
+		let nextMenuId = null;
+
+		switch (e.code) {
+			case 'ArrowDown':
+			case 'ArrowRight':
+				if(focused_onpowerconfirm)focusOnNextMenuItem(1);
+				else focusOnNextUser(1);
+				return false;
+			case 'ArrowUp':
+			case 'ArrowLeft':
+				if(focused_onpowerconfirm) focusOnNextMenuItem(-1);
+				else focusOnNextUser(-1);
+				return false;
+			case 'Enter':
+				if(focused_onpowerconfirm) {
+					if(null !== document.querySelector('#power-confirm .menu-focus a')){
+						document.querySelector('#power-confirm .menu-focus a').click();
+					} else {
+						toggle_menu(false);
+					}
+				} else {
+					if (focused_user !== null) {
+						document.getElementById(focused_user).click();
+					}
+				}
+				return false;
+			case 'Tab':
+				toggle_menu(null);
+				return false;
+			case 'Escape':
+				if(focused_onpowerconfirm == true) toggle_menu(null);
+				return false;
+			default:
+				console.log(e.code);
+				break;
+		}
+	} else {
+		if(e.code == "Escape") {
+			reset_prompt();
+			toggle_menu(false);
+		}
+	}
+
+};
+
+function focusOnNextMenuItem(index) {
+
+    let nextItem = document.querySelector('#power-confirm li.menu-focus');
+
+	while (index !== 0) {
+		if(nextItem == null){
+			nextItem = index > 0 ? document.querySelector('#power-confirm').firstElementChild : document.querySelector('#power-confirm').lastElementChild;
+			index = index > 0 ? index-1 : index+1;
+		} else {
+			nextItem = index > 0 ? nextItem.nextElementSibling : nextItem.previousElementSibling;
+			if(nextItem !== null) index = index > 0 ? index-1 : index+1;
+		}
+	}
+
+	Array.from(document.getElementsByClassName('menu-focus')).forEach(function(element){
+		element.classList.remove('menu-focus');
+	});
+
+	if (nextItem !== null) {
+		nextItem.classList.add('menu-focus');
+	}
+}
+
+function focusOnNextUser(index) {
+
+	if(index === 0) return;
+
+	let nextItem = null;
+	if(focused_user !== null) {
+		nextItem = document.getElementById(focused_user);
+	}
+
+	while (index !== 0) {
+		if(nextItem == null){
+			nextItem = index>0 ? document.getElementById('users').firstElementChild : document.getElementById('users').lastElementChild;
+			index = index > 0 ? index-1 : index+1;
+		} else {
+			nextItem = index > 0 ? nextItem.nextElementSibling : nextItem.previousElementSibling;
+			if(nextItem !== null) index = index > 0 ? index-1 : index+1;
+		}
+	}
+
+	Array.from(document.getElementsByClassName('user-focus')).forEach(function(element){
+		element.classList.remove('user-focus');
+	});
+
+	if (nextItem !== null) {
+		nextItem.classList.add('user-focus');
+		focused_user = nextItem.getAttribute('id');
 	}
 }
 

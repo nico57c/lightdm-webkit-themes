@@ -17,40 +17,35 @@
 					<div id="prompt-label"></div>
 					<div id="prompt-entry"></div>
 					<div id="prompt-action">
-						<span>Ok</span >
-						<span>Cancel</span>
+						<div onclick="reset_prompt()"><span class="menu-icon icon-cancel"></span> Cancel</div>
+						<div onclick="provide_secret()"><span class="menu-icon icon-ok"></span> Login</div>
 					</div>
 				</form>
 			</div>
 		</div>
-		<div id="power-confirm" onclick="hide_element('power-confirm')">
-			<ul>
-				<li>
-					<a href="#" onclick="lightdm.shutdown();">
-						<div class="icon" id="icon-shutdown"></div>
-						<span>Power off</span>
-					</a>
-				</li>
-				<li>
-					<a href="#" onclick="lightdm.restart();">
-						<div class="icon" id="icon-reboot"></div>
-						<span>Restart</span>
-					</a>
-				</li>
-				<li>
-					<a href="#" onclick="hide_element('power-confirm');">
-						<div class="icon" id="icon-cancel"></div>
-						<span>Cancel</span>
-					</a>
-				</li>
-			</ul>
-		</div>
+		<ul id="power-confirm" onclick="toggle_menu()">
+			<li>
+				<a href="#" onclick="lightdm.shutdown();">
+					<div class="menu-icon icon-shutdown"></div>
+					<span>Power off</span>
+				</a>
+			</li>
+			<li>
+				<a href="#" onclick="lightdm.restart();">
+					<div class="menu-icon icon-reboot"></div>
+					<span>Restart</span>
+				</a>
+			</li>
+		</ul>
 		<div id="users" class="shown"></div>
 		<div id="session-list"></div>
-		<img id="shutdown" src="../image/iec5009.svg" onclick="show_element('power-confirm')" />
+		<img id="menu" src="../image/menu.svg" onclick="toggle_menu(null)" class="menu-icon" />
 		<script type="application/javascript">
 			var lightdm = {
-				authenticate: function(username) { show_prompt("Password", 0); return false; },
+				authenticate: function(username) { console.log("test - authentication receive username", username); show_prompt("Password", 0); return false; },
+                respond: function(password) { console.log("test - response receive password", password); return false; },
+                shutdown: function(){ console.log('test - shutdown called'); },
+				restart: function(){ console.log('test - restart called'); },
 				autologin_timeout: 0,
 				sessions: [
 					{

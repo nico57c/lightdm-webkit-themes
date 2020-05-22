@@ -40,17 +40,20 @@ function createSelectBox(items, selectedItem, callbackOnItemSelection) {
 
     selectDiv.addEventListener("click", function(e) {
         e.stopPropagation();
-        let classList = this.parentElement.getElementsByClassName("select-items")[0].classList;
-            classList.toggle("select-hide");
-        let selectClassList = this.parentElement.getElementsByClassName("select-active")[0].classList;
-        selectClassList.remove("select-active-down");
-        selectClassList.add("select-active-up")
+        if(this.parentElement.getElementsByClassName("select-items")[0].classList.toggle("select-hide")){
+            this.getElementsByClassName('select-icon')[0].classList.remove("select-icon-up");
+            this.getElementsByClassName('select-icon')[0].classList.add("select-icon-down")
+        } else {
+            this.getElementsByClassName('select-icon')[0].classList.remove("select-icon-down");
+            this.getElementsByClassName('select-icon')[0].classList.add("select-icon-up")
+        }
+
     });
 
     document.addEventListener("click", function() {
         const element = mainDiv.getElementsByClassName("select-items")[0];
         if(!element.classList.contains("select-hide")) {
-            element.classList.add("select-hide");
+            selectDiv.click();
         }
     });
 
