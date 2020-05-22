@@ -1,6 +1,6 @@
-# Update for 4K
+# Petrichor
 
-## Updates
+## Update for 4K
 
 ### Media queries
 - Media queries for HD to Utra-HD
@@ -39,7 +39,12 @@
   - `Enter` to valid selection
   - `Tab` or `Escape` to quit power menu
 
-# Petrichor
+<hr/>
+
+_Next is original readme of Petrichor_
+
+<hr/>
+
 ## A clean theme for LightDM's webkit greeter
 
 * [AUR Package][aur]
