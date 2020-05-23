@@ -36,18 +36,20 @@ if [ -d "$InstallDir" ]; then
   
   # Customize lightdm_custom.service
   echo "1/4 Customize lightdm_custom.service."
-  sed -i "s+__user__+$ServiceUser+" $InstallDir/lightdm_wallpaper.service
-  sed -i "s+__drivedir__+$ServiceMountDrive+" $InstallDir/lightdm_wallpaper.service
-  sed -i "s+__installdir__+$InstallDir+" $InstallDir/lightdm_wallpaper.service
+  sed -i "s+__user__+$ServiceUser+g" $InstallDir/lightdm_wallpaper.service
+  sed -i "s+__drivedir__+$ServiceMountDrive+g" $InstallDir/lightdm_wallpaper.service
+  sed -i "s+__installdir__+$InstallDir+g" $InstallDir/lightdm_wallpaper.service
+  sed -i "s+__fileprefix__+$FilePrefix+g" $InstallDir/lightdm_wallpaper.service
   
   # Customize wallpaper rotate script 
   echo "2/4 Customize wallpaper rotate script"
-  sed -i "s+__user__+$ServiceUser+" $InstallDir/wallpaper_rotate.sh
-  sed -i "s+__drivedir__+$ServiceMountDrive+" $InstallDir/wallpaper_rotate.sh
-  sed -i "s+__installdir__+$InstallDir+" $InstallDir/wallpaper_rotate.sh
+  sed -i "s+__user__+$ServiceUser+g" $InstallDir/wallpaper_rotate.sh
+  sed -i "s+__drivedir__+$ServiceMountDrive+g" $InstallDir/wallpaper_rotate.sh
+  sed -i "s+__installdir__+$InstallDir+g" $InstallDir/wallpaper_rotate.sh
+  sed -i "s+__fileprefix__+$FilePrefix+g" $InstallDir/wallpaper_rotate.sh
   
   echo "3/4 Create symbolic link to wallpaper directory"
-  ln -s $WallpaperDir  $InstallDir/wallpaper
+  ln -s $WallpaperDir  $InstallDir/wallpapers
 
   echo "4/4 Create symbolic link to images directory of lightdm theme"
   ln -s $LightdmThemeImages $InstallDir/images
@@ -58,16 +60,17 @@ if [ -d "$InstallDir" ]; then
   echo " Service installation "
   echo "----------------------"
   echo "-- system service active on system boot --"
-    echo " systemctl enable $InstallDir/lightdm_wallpaper.service"
-    echo " systemctl enable $InstallDir/lightdm_wallpaper.timer"
-    echo " systemctl start $InstallDir/lightdm_wallpaper"
+  echo " systemctl enable $InstallDir/lightdm_wallpaper.service"
+  echo " systemctl enable $InstallDir/lightdm_wallpaper.timer"
+  echo " systemctl start $InstallDir/lightdm_wallpaper"
   echo "----------------------"
   echo "-- user service active on users login --"
-    echo " systemctl --global enable $InstallDir/lightdm_wallpaper.service"
-    echo " systemctl --global enable $InstallDir/lightdm_wallpaper.timer"
-    echo " systemctl --global start $InstallDir/lightdm_wallpaper"
+  echo " systemctl --global enable $InstallDir/lightdm_wallpaper.service"
+  echo " systemctl --global enable $InstallDir/lightdm_wallpaper.timer"
+  echo " systemctl --global start $InstallDir/lightdm_wallpaper"
   echo "----------------------"
 
 else
   echo "Install directory does not exists."
 fi
+
