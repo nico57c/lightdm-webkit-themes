@@ -17,8 +17,8 @@
 					<div id="prompt-label"></div>
 					<div id="prompt-entry"></div>
 					<div id="prompt-action">
-						<div onclick="reset_prompt()"><span class="menu-icon icon-cancel"></span> Cancel</div>
-						<div onclick="provide_secret()"><span class="menu-icon icon-ok"></span> Login</div>
+						<div onclick="reset_prompt()" id="prompt-action-cancel"><span class="menu-icon icon-cancel"></span> Cancel</div>
+						<div onclick="provide_secret()" id="prompt-action-ok"><span class="menu-icon icon-ok"></span> Login</div>
 					</div>
 				</form>
 			</div>
@@ -42,11 +42,13 @@
 		<img id="menu" src="../image/menu.svg" onclick="toggle_menu(null)" class="menu-icon" />
 		<script type="application/javascript">
 			var lightdm = {
-				authenticate: function(username) { console.log("test - authentication receive username", username); show_prompt("Password", 0); return false; },
-                respond: function(password) { console.log("test - response receive password", password); return false; },
+				authenticate: function(username) { console.log("test - authentication receive username", username); lightdm.authentication_user = username; show_prompt("Password", 0); },
+                respond: function(password) { password == '123' ? lightdm.is_authenticated=true : lightdm.is_authenticated=false; console.log("test - response receive password", password); authentication_complete(); },
                 shutdown: function(){ console.log('test - shutdown called'); },
 				restart: function(){ console.log('test - restart called'); },
-				autologin_timeout: 0,
+				start_session_sync: function(username, sessiontype) { console.log('test - start_session_sync receive username ', username, 'session type', sessiontype)},
+				autologin_user: 'anne',
+				autologin_timeout: 10,
 				sessions: [
 					{
 						name: "Xfce",

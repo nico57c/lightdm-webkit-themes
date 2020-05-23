@@ -120,7 +120,7 @@ SHUTDOWN
 	transition: opacity ease-in-out .5s;
 }
 
-.menu-icon:hover, #power-confirm li.menu-focus .menu-icon, #menu.menu-focus  {
+#power-confirm .menu-icon:hover, #power-confirm li.menu-focus .menu-icon, #menu.menu-focus  {
 	border-radius: .5rem;
 
 	text-decoration: underline;
@@ -195,6 +195,10 @@ a.user:hover, a.user-focus {
 	display: block;
 }
 
+#countdown-label {
+	font-size: 1.8rem;
+	font-style: italic;
+}
 
 /*
 -----
@@ -441,6 +445,7 @@ SELECT
 Effect
 -----
 */
+
 #prompt-container.shown, #users.shown, #power-confirm.shown {
 	opacity: 1;
 	visibility: visible;

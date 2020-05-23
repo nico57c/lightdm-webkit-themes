@@ -1,4 +1,5 @@
-var password_prompt = false;
+var prompt_password = false;
+var prompt_message = false;
 var selected_user = null;
 var focused_user = null;
 var focused_onpowerconfirm = false;
@@ -24,14 +25,12 @@ function toggle_menu(force = null)
 
 function show_prompt(text, type)
 {
-	password_prompt = true;
+	prompt_password = true;
 	document.getElementById('prompt-title').innerHTML = text;
 	document.getElementById('users').classList.remove('shown');
 	document.getElementById('prompt-container').classList.add('shown');
-
-	document.querySelector('#prompt-content > form').onsubmit = function() {
-		provide_secret();
-	};
+	document.getElementById('prompt-action-cancel').style.display = 'inline-block';
+	document.getElementById('prompt-action-ok').style.display = 'inline-block';
 
 	let input = document.createElement('input');
 	document.getElementById('prompt-entry').appendChild(input);
@@ -42,46 +41,40 @@ function show_prompt(text, type)
 
 function show_message(text, type)
 {
-	let messageContainer = document.getElementById('message-container');
-	document.getElementById('message-label').innerHTML = text;
-
-	if (text.length > 0)
-	{
-		var selected = document.getElementById("user-" + selected_user);
-		let userPosition = selected.getBoundingClientRect();
-
-		messageContainer.style.top = userPosition.top + "px";
-		messageContainer.style.left = userPosition.left + "px";
-		messageContainer.classList.toggle('shown', true);
-
-	} else {
-		messageContainer.classList.remove('shown', false);
-	}
+	prompt_message = true;
+	document.getElementById('prompt-title').innerHTML = 'Message';
+	document.getElementById('users').classList.remove('shown');
+	document.getElementById('prompt-container').classList.add('shown');
+	document.getElementById('prompt-label').innerHTML = text;
+	document.getElementById('prompt-action-cancel').style.display = 'inline-block';
+	document.getElementById('prompt-action-ok').style.display = 'none';
 }
 
 function reset_prompt()
 {
 	document.getElementById('prompt-container').classList.remove("shown");
-	document.getElementById('prompt-entry').firstElementChild.remove();
+
+	Array.from(document.getElementById('prompt-label').childNodes).forEach(function(element){ element.remove() });
+	Array.from(document.getElementById('prompt-entry').childNodes).forEach(function(element){ element.remove() });
+
 	document.getElementById('users').classList.add('shown');
-	password_prompt = false;
+	prompt_password = false;
+	prompt_message = false;
 }
 
 function authentication_complete()
 {
-	if (lightdm.is_authenticated)
+	if (lightdm.is_authenticated === true)
 		lightdm.start_session_sync(lightdm.authentication_user, selected_session);
 	else
 		show_message('<span class="error-icon">&#x26A0;</span> Authentication Failed');
-
-	reset_prompt();
 }
 
 function start_authentication(username)
 {
 	document.getElementById('prompt-container').classList.remove("shown");
 
-	if (!password_prompt) {
+	if (!prompt_password) {
 		selected_user = username;
 		lightdm.authenticate(username);
 	}
@@ -92,7 +85,6 @@ function provide_secret()
     const value = document.getElementById('prompt-entry').firstElementChild.value;
 	reset_prompt();
 	lightdm.respond(value);
-	delete(value);
 }
 
 function autologin_timer_expired(username)
@@ -105,7 +97,7 @@ function countdown()
 	label = document.getElementById('countdown-label');
 	label.innerHTML = ' in ' + time_remaining + ' seconds';
 	time_remaining--;
-	if (time_remaining >= 0)
+	if(time_remaining >= 0)
 		setTimeout(countdown, 1000);
 }
 
@@ -191,7 +183,7 @@ window.onkeydown = function(e) {
 	e.stopPropagation();
 	e.stopImmediatePropagation();
 
-	if(!password_prompt) {
+	if(!prompt_password && !prompt_message) {
 		var event = new MouseEvent('mouseover', {
 			'view': window,
 			'bubbles': true,
@@ -236,9 +228,11 @@ window.onkeydown = function(e) {
 				break;
 		}
 	} else {
-		if(e.code == "Escape") {
+		if(e.code ==  'Escape') {
 			reset_prompt();
 			toggle_menu(false);
+		} else if(e.code == 'Enter' && prompt_password) {
+			provide_secret();
 		}
 	}
 
