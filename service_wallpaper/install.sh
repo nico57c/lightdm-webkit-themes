@@ -49,10 +49,18 @@ if [ -d "$InstallDir" ]; then
   sed -i "s+__fileprefix__+$FilePrefix+g" $InstallDir/wallpaper_rotate.sh
   
   echo "3/4 Create symbolic link to wallpaper directory"
-  ln -s $WallpaperDir  $InstallDir/wallpapers
+  if [ -s "$InstallDir/wallpapers" ]; then
+    echo "  Symbolic link 'wallpapers' already exist"
+  else
+    ln -s $WallpaperDir  $InstallDir/wallpapers
+  fi
 
   echo "4/4 Create symbolic link to images directory of lightdm theme"
-  ln -s $LightdmThemeImages $InstallDir/images
+  if [ -s "$InstallDir/images" ]; then
+    echo "  Symbolic link 'images' already exist"
+  else
+    ln -s $LightdmThemeImages $InstallDir/images
+  fi
 
   echo ""
   echo ""
@@ -62,12 +70,12 @@ if [ -d "$InstallDir" ]; then
   echo "-- system service active on system boot --"
   echo " systemctl enable $InstallDir/lightdm_wallpaper.service"
   echo " systemctl enable $InstallDir/lightdm_wallpaper.timer"
-  echo " systemctl start $InstallDir/lightdm_wallpaper"
+  echo " systemctl start lightdm_wallpaper"
   echo "----------------------"
   echo "-- user service active on users login --"
   echo " systemctl --global enable $InstallDir/lightdm_wallpaper.service"
   echo " systemctl --global enable $InstallDir/lightdm_wallpaper.timer"
-  echo " systemctl --global start $InstallDir/lightdm_wallpaper"
+  echo " systemctl --global start lightdm_wallpaper"
   echo "----------------------"
 
 else

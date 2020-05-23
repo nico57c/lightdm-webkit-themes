@@ -7,7 +7,7 @@ if [ -f __installdir__/current_wallpaper ]; then
 
   wallpaperMax=`ls -1 __installdir__/wallpapers | wc -l`
   
-  wallpaperNumber=`head -c 3 __installdir__/current_wallpaper`
+  wallpaperNumber=`head -c 4 __installdir__/current_wallpaper`
   wallpaperNumber=$((0+$wallpaperNumber))
 
   echo "- numbers of wallpapers : $wallpaperMax"
@@ -18,7 +18,7 @@ if [ -f __installdir__/current_wallpaper ]; then
   fi
 
   rm __installdir__/images/wallpaper.jpg
-  cp __installdir__/wallpapers/__fileprefix___$wallpaperNumber.jpg __installdir__/images/wallpaper.jpg
+  cp __installdir__/wallpapers/__fileprefix__$wallpaperNumber.jpg __installdir__/images/wallpaper.jpg
   echo $(($wallpaperNumber+1)) > __installdir__/current_wallpaper 
 
 else

@@ -10,4 +10,4 @@ Based on existing theme for lightdm and udpated for 4k with media queries.
 
 ### Installation
 
-`sh ./install.sh /opt/lightdm_wallpaper /usr/share/lightdm-webkit/themes/petrichor_4k/image /srv/images/wallpapers wallpaper root /`
+`sh ./install.sh /opt/lightdm_wallpaper /usr/share/lightdm-webkit/themes/petrichor_4k/image /srv/images/wallpapers wallpaper_ root /`
